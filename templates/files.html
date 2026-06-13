@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📁 File Manager</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="logo">
+                <h1>🤖 AI Assistant</h1>
+            </div>
+            <nav class="nav-menu">
+                <a href="/" class="nav-item">💬 Chat</a>
+                <a href="/code-generator" class="nav-item">📝 Generate Code</a>
+                <a href="/file-manager" class="nav-item active">📁 File Manager</a>
+                <a href="/analytics" class="nav-item">💰 Analytics</a>
+                <a href="/media" class="nav-item">🎨 Media Editor</a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="content-container">
+                <div class="content-header">
+                    <h2>📁 File Manager</h2>
+                    <p>Manage your files and folders</p>
+                </div>
+
+                <div class="files-section">
+                    <button onclick="listFiles()" class="btn btn-primary">📂 Show Files</button>
+                    <input type="text" id="pathInput" placeholder="Enter path (default: current folder)" value=".">
+                </div>
+
+                <!-- Files Display -->
+                <div id="filesResult" style="display: none;" class="files-list">
+                    <h3>Files in folder:</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Type</th>
+                                <th>Size</th>
+                            </tr>
+                        </thead>
+                        <tbody id="filesTable">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        function listFiles() {
+            const path = document.getElementById('pathInput').value || '.';
+            
+            fetch('/list-files', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ directory: path })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const tbody = document.getElementById('filesTable');
+                    tbody.innerHTML = '';
+                    
+                    data.files.forEach(file => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${file.name}</td>
+                            <td>${file.type}</td>
+                            <td>${file.size} bytes</td>
+                        `;
+                        tbody.appendChild(row);
+                    });
+                    
+                    document.getElementById('filesResult').style.display = 'block';
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error listing files');
+            });
+        }
+    </script>
+</body>
+</html>

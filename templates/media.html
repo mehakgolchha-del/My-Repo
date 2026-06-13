@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎨 Media Editor</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="logo">
+                <h1>🤖 AI Assistant</h1>
+            </div>
+            <nav class="nav-menu">
+                <a href="/" class="nav-item">💬 Chat</a>
+                <a href="/code-generator" class="nav-item">📝 Generate Code</a>
+                <a href="/file-manager" class="nav-item">📁 File Manager</a>
+                <a href="/analytics" class="nav-item">💰 Analytics</a>
+                <a href="/media" class="nav-item active">🎨 Media Editor</a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="content-container">
+                <div class="content-header">
+                    <h2>🎨 Media Editor</h2>
+                    <p>Upload and edit your images</p>
+                </div>
+
+                <div class="media-section">
+                    <form id="mediaForm" onsubmit="uploadImage(event)" enctype="multipart/form-data">
+                        <div class="form-group">
+                            <label for="imageInput">Upload Image:</label>
+                            <input type="file" id="imageInput" accept="image/*" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="operation">Operation:</label>
+                            <select id="operation" required>
+                                <option value="enhance">✨ Enhance</option>
+                                <option value="blur">🌀 Blur</option>
+                                <option value="sharpen">🔪 Sharpen</option>
+                            </select>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">🚀 Process Image</button>
+                    </form>
+                </div>
+
+                <!-- Result -->
+                <div id="mediaResult" style="display: none;" class="media-result">
+                    <h3>✅ Image Processed!</h3>
+                    <p id="resultMessage"></p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        function uploadImage(event) {
+            event.preventDefault();
+            
+            const formData = new FormData();
+            const imageInput = document.getElementById('imageInput');
+            const operation = document.getElementById('operation').value;
+            
+            formData.append('image', imageInput.files[0]);
+            formData.append('operation', operation);
+            
+            fetch('/edit-image', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('resultMessage').textContent = data.message;
+                    document.getElementById('mediaResult').style.display = 'block';
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error processing image');
+            });
+        }
+    </script>
+</body>
+</html>

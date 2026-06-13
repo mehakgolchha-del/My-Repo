@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🤖 AI Assistant - Chat</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="logo">
+                <h1>🤖 AI Assistant</h1>
+            </div>
+            <nav class="nav-menu">
+                <a href="/" class="nav-item active">💬 Chat</a>
+                <a href="/code-generator" class="nav-item">📝 Generate Code</a>
+                <a href="/file-manager" class="nav-item">📁 File Manager</a>
+                <a href="/analytics" class="nav-item">💰 Analytics</a>
+                <a href="/media" class="nav-item">🎨 Media Editor</a>
+            </nav>
+        </aside>
+
+        <!-- Main Chat Area -->
+        <main class="main-content">
+            <div class="chat-container">
+                <div class="chat-header">
+                    <h2>💬 Chat with AI</h2>
+                    <p>Ask me anything!</p>
+                </div>
+
+                <!-- Messages Display Area -->
+                <div class="chat-messages" id="chatMessages">
+                    <div class="message ai-message">
+                        <div class="message-content">
+                            👋 Hello! I'm your AI Assistant. Ask me anything - I can help with coding, questions, and more!
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Input Area -->
+                <div class="chat-input-area">
+                    <form id="chatForm" onsubmit="sendMessage(event)">
+                        <div class="input-wrapper">
+                            <input 
+                                type="text" 
+                                id="messageInput" 
+                                placeholder="Type your message here..." 
+                                autocomplete="off"
+                            >
+                            <button type="submit" class="send-btn">📤 Send</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <script>
+        function sendMessage(event) {
+            event.preventDefault();
+            
+            const messageInput = document.getElementById('messageInput');
+            const message = messageInput.value.trim();
+            
+            if (!message) return;
+            
+            // Show user message
+            const chatMessages = document.getElementById('chatMessages');
+            const userMessageDiv = document.createElement('div');
+            userMessageDiv.className = 'message user-message';
+            userMessageDiv.innerHTML = `<div class="message-content">${escapeHtml(message)}</div>`;
+            chatMessages.appendChild(userMessageDiv);
+            
+            // Clear input
+            messageInput.value = '';
+            
+            // Scroll to bottom
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            
+            // Send to server
+            fetch('/chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ message: message })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const aiMessageDiv = document.createElement('div');
+                    aiMessageDiv.className = 'message ai-message';
+                    aiMessageDiv.innerHTML = `<div class="message-content">${escapeHtml(data.response)}</div>`;
+                    chatMessages.appendChild(aiMessageDiv);
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error sending message');
+            });
+        }
+        
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+    </script>
+</body>
+</html>

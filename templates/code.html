@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📝 Code Generator</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="logo">
+                <h1>🤖 AI Assistant</h1>
+            </div>
+            <nav class="nav-menu">
+                <a href="/" class="nav-item">💬 Chat</a>
+                <a href="/code-generator" class="nav-item active">📝 Generate Code</a>
+                <a href="/file-manager" class="nav-item">📁 File Manager</a>
+                <a href="/analytics" class="nav-item">💰 Analytics</a>
+                <a href="/media" class="nav-item">🎨 Media Editor</a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="content-container">
+                <div class="content-header">
+                    <h2>📝 Code Generator</h2>
+                    <p>Describe what you want and I'll generate code for you!</p>
+                </div>
+
+                <div class="form-section">
+                    <form id="codeForm" onsubmit="generateCode(event)">
+                        <div class="form-group">
+                            <label for="description">What code do you want?</label>
+                            <textarea 
+                                id="description" 
+                                placeholder="Example: Create a function that adds two numbers"
+                                required
+                            ></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="language">Programming Language:</label>
+                            <select id="language" required>
+                                <option value="python">🐍 Python</option>
+                                <option value="javascript">🟨 JavaScript</option>
+                                <option value="java">☕ Java</option>
+                                <option value="html">🌐 HTML</option>
+                                <option value="css">🎨 CSS</option>
+                            </select>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">✨ Generate Code</button>
+                    </form>
+                </div>
+
+                <!-- Generated Code Display -->
+                <div id="codeResult" style="display: none;" class="code-result">
+                    <h3>Generated Code:</h3>
+                    <pre><code id="generatedCode"></code></pre>
+                    <button onclick="copyCode()" class="btn btn-secondary">📋 Copy Code</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        function generateCode(event) {
+            event.preventDefault();
+            
+            const description = document.getElementById('description').value;
+            const language = document.getElementById('language').value;
+            
+            fetch('/generate-code', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ description, language })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('generatedCode').textContent = data.code;
+                    document.getElementById('codeResult').style.display = 'block';
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error generating code');
+            });
+        }
+        
+        function copyCode() {
+            const code = document.getElementById('generatedCode').textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                alert('Code copied to clipboard!');
+            });
+        }
+    </script>
+</body>
+</html>

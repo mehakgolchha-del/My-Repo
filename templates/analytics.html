@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>💰 Analytics Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="logo">
+                <h1>🤖 AI Assistant</h1>
+            </div>
+            <nav class="nav-menu">
+                <a href="/" class="nav-item">💬 Chat</a>
+                <a href="/code-generator" class="nav-item">📝 Generate Code</a>
+                <a href="/file-manager" class="nav-item">📁 File Manager</a>
+                <a href="/analytics" class="nav-item active">💰 Analytics</a>
+                <a href="/media" class="nav-item">🎨 Media Editor</a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="content-container">
+                <div class="content-header">
+                    <h2>💰 Finance Tracker</h2>
+                    <p>Track your income and expenses</p>
+                </div>
+
+                <div class="analytics-section">
+                    <button onclick="getBalance()" class="btn btn-primary">📊 Get Balance</button>
+                </div>
+
+                <!-- Balance Display -->
+                <div id="balanceResult" style="display: none;" class="balance-cards">
+                    <div class="balance-card income">
+                        <h3>💵 Total Income</h3>
+                        <p id="totalIncome" class="amount">$0</p>
+                    </div>
+                    <div class="balance-card expense">
+                        <h3>💸 Total Expenses</h3>
+                        <p id="totalExpense" class="amount">$0</p>
+                    </div>
+                    <div class="balance-card balance">
+                        <h3>💰 Net Balance</h3>
+                        <p id="netBalance" class="amount">$0</p>
+                    </div>
+                    <div class="balance-card transactions">
+                        <h3>📊 Transactions</h3>
+                        <p id="transactionCount" class="amount">0</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        function getBalance() {
+            fetch('/get-balance')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('totalIncome').textContent = '$' + data.data.income.toFixed(2);
+                    document.getElementById('totalExpense').textContent = '$' + data.data.expenses.toFixed(2);
+                    document.getElementById('netBalance').textContent = '$' + data.data.balance.toFixed(2);
+                    document.getElementById('transactionCount').textContent = data.data.transactions;
+                    document.getElementById('balanceResult').style.display = 'grid';
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error getting balance');
+            });
+        }
+    </script>
+</body>
+</html>
