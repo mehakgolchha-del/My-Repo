@@ -1,0 +1,56 @@
+# AI Assistant Configuration
+
+# Voice Assistant Settings
+voice:
+  wake_word: "hey vish"
+  wake_word_sensitivity: 0.5
+  voice_gender: "male"
+  speech_rate: 150
+  volume: 0.8
+  language: "en-US"
+
+# LLM Settings
+llm:
+  model_name: "llama-2-7b"  # or mistral-7b
+  model_path: "./models/llama-2-7b-chat.gguf"
+  context_length: 2048
+  max_tokens: 512
+  temperature: 0.7
+  offline_mode: true
+
+# PC Automation Settings
+automation:
+  screenshot_quality: 95
+  screenshot_format: "png"
+  max_concurrent_tasks: 5
+  task_timeout: 30
+
+# Media Processing Settings
+media:
+  supported_image_formats: ["jpg", "jpeg", "png", "bmp", "webp"]
+  supported_video_formats: ["mp4", "avi", "mov", "mkv"]
+  max_image_size: 4096
+  video_fps: 30
+  video_codec: "h264"
+
+# Analytics Settings
+analytics:
+  database_path: "./data/analytics.db"
+  enable_charts: true
+  chart_theme: "plotly_dark"
+  auto_backup: true
+  backup_frequency: "daily"
+
+# Logging
+logging:
+  level: "INFO"
+  log_file: "./logs/ai_assistant.log"
+  max_log_size: "10MB"
+  backup_count: 5
+
+# Server Settings
+server:
+  host: "localhost"
+  port: 5000
+  debug: false
+  cors_enabled: true
